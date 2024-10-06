@@ -36,10 +36,10 @@ namespace lab_3.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+                return RedirectToAction(nameof(Index)); // Перенаправляем на Index
             }
-            return View(project);
+            return View(project); // Если не прошли валидацию, возвращаем на форму
         }
 
         // Редактирование проекта (GET)
