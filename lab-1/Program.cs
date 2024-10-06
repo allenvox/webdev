@@ -41,7 +41,16 @@ namespace UtilityApp
         static void RunTemperatureConverter()
         {
             Console.WriteLine("Введите значение градусов:");
-            double value = double.Parse(Console.ReadLine());
+            double value = 0;
+            try
+            {
+                value = double.Parse(Console.ReadLine());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Недопустимый ввод");
+                return;
+            }
 
             Console.WriteLine("Введите исходную шкалу (C, K, F):");
             string fromScale = Console.ReadLine().ToUpper();
