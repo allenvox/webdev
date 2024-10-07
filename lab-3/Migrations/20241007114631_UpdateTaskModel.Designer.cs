@@ -12,8 +12,8 @@ using lab_3.Data;
 namespace lab_3.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241006062338_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20241007114631_UpdateTaskModel")]
+    partial class UpdateTaskModel
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

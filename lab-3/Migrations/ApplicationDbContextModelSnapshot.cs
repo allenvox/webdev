@@ -22,6 +22,21 @@ namespace lab_3.Migrations
 
             MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
 
+            modelBuilder.Entity("EmployeeProject", b =>
+                {
+                    b.Property<int>("EmployeesId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProjectsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("EmployeesId", "ProjectsId");
+
+                    b.HasIndex("ProjectsId");
+
+                    b.ToTable("EmployeeProject");
+                });
+
             modelBuilder.Entity("lab_3.Models.Employee", b =>
                 {
                     b.Property<int>("Id")
@@ -46,12 +61,7 @@ namespace lab_3.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ProjectId");
 
                     b.ToTable("Employees");
                 });
@@ -132,11 +142,19 @@ namespace lab_3.Migrations
                     b.ToTable("Tasks");
                 });
 
-            modelBuilder.Entity("lab_3.Models.Employee", b =>
+            modelBuilder.Entity("EmployeeProject", b =>
                 {
+                    b.HasOne("lab_3.Models.Employee", null)
+                        .WithMany()
+                        .HasForeignKey("EmployeesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("lab_3.Models.Project", null)
-                        .WithMany("Employees")
-                        .HasForeignKey("ProjectId");
+                        .WithMany()
+                        .HasForeignKey("ProjectsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("lab_3.Models.Task", b =>
@@ -172,8 +190,6 @@ namespace lab_3.Migrations
 
             modelBuilder.Entity("lab_3.Models.Project", b =>
                 {
-                    b.Navigation("Employees");
-
                     b.Navigation("Tasks");
                 });
 #pragma warning restore 612, 618
