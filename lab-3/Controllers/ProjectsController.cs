@@ -36,10 +36,19 @@ namespace lab_3.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(project);
-                await _context.SaveChangesAsync(); // Сохраняем изменения в базе данных
+                await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index)); // Перенаправляем на Index
             }
-            return View(project); // Если не прошли валидацию, возвращаем на форму
+
+            // Логирование ошибок валидации
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage); // Вывод ошибок в консоль
+            }
+
+            // Если не прошли валидацию, возвращаем на форму
+            return View(project);
         }
 
         // Редактирование проекта (GET)

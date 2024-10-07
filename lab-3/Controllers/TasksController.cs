@@ -39,12 +39,13 @@ namespace lab_3.Controllers
             return View(task);
         }
 
-        // Создание задачи (GET)
+        // Отображение формы создания задачи (GET)
         public IActionResult Create()
         {
+            // Заполняем ViewBag данными для выпадающих списков
             ViewData["Employees"] = new SelectList(_context.Employees, "Id", "FirstName");
             ViewData["Projects"] = new SelectList(_context.Projects, "Id", "Name");
-            return View();
+            return View(new lab_3.Models.Task()); // Передаем новую задачу в представление
         }
 
         // Создание задачи (POST)
@@ -52,15 +53,12 @@ namespace lab_3.Controllers
         [ValidateAntiForgeryToken]
         public async System.Threading.Tasks.Task<IActionResult> Create([Bind("Title,AuthorId,ExecutorId,ProjectId,Status,Comment,Priority")] lab_3.Models.Task task)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(task);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["Employees"] = new SelectList(_context.Employees, "Id", "FirstName", task.ExecutorId);
-            ViewData["Projects"] = new SelectList(_context.Projects, "Id", "Name", task.ProjectId);
-            return View(task);
+            task.Author = await _context.Employees.FindAsync(task.AuthorId);
+            task.Executor = await _context.Employees.FindAsync(task.ExecutorId);
+            task.Project = await _context.Projects.FindAsync(task.ProjectId);
+            _context.Add(task);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index)); // Перенаправляем на список задач
         }
 
         // Редактирование задачи (GET)

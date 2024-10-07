@@ -48,9 +48,17 @@ namespace lab_3.Controllers
             {
                 _context.Add(employee);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index)); // Перенаправляем на Index
             }
-            return View(employee);
+
+            // Логирование ошибок валидации
+            var errors = ModelState.Values.SelectMany(v => v.Errors);
+            foreach (var error in errors)
+            {
+                Console.WriteLine(error.ErrorMessage); // Вывод ошибок в консоль
+            }
+
+            return View(employee); // Если не прошли валидацию, возвращаем на форму
         }
 
         // Редактирование сотрудника (GET)
