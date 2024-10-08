@@ -16,10 +16,30 @@ namespace lab_3.Controllers
             _context = context;
         }
 
-        // Просмотр списка проектов
+        // Отображение списка проектов
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Projects.ToListAsync());
+            var projects = await _context.Projects.ToListAsync();
+            return View(projects);
+        }
+
+        // Просмотр деталей проекта
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var project = await _context.Projects
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            return View(project);
         }
 
         // Создание проекта (GET)
