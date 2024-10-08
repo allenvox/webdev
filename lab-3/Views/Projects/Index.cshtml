@@ -5,12 +5,11 @@
 <table class="table">
     <thead>
         <tr>
-            <th>Название</th>
+            <th>Название проекта</th>
             <th>Компания-заказчик</th>
             <th>Компания-исполнитель</th>
             <th>Дата начала</th>
             <th>Дата окончания</th>
-            <th>Приоритет</th>
             <th>Действия</th>
         </tr>
     </thead>
@@ -21,17 +20,16 @@
                 <td>@project.Name</td>
                 <td>@project.CustomerCompany</td>
                 <td>@project.ContractorCompany</td>
-                <td>@project.StartDate.ToShortDateString()</td>
-                <td>@project.EndDate?.ToShortDateString() ?? "Не завершено"</td>
-                <td>@project.Priority</td>
+                <td>@project.StartDate.ToString("MM/dd/yyyy")</td>
+                <td>@project.EndDate?.ToString("MM/dd/yyyy") ?? "Не завершено"</td>
                 <td>
-                    <a href="@Url.Action("Edit", "Projects", new { id = project.Id })">Редактировать</a> |
-                    <a href="@Url.Action("Details", "Projects", new { id = project.Id })">Просмотр</a> |
-                    <a href="@Url.Action("Delete", "Projects", new { id = project.Id })">Удалить</a>
+                    <a asp-action="Details" asp-route-id="@project.Id" class="btn btn-info">Детали</a>
+                    <a asp-action="Edit" asp-route-id="@project.Id" class="btn btn-warning">Редактировать</a>
+                    <a asp-action="Delete" asp-route-id="@project.Id" class="btn btn-danger">Удалить</a>
                 </td>
             </tr>
         }
     </tbody>
 </table>
 
-<a href="@Url.Action("Create", "Projects")" class="btn btn-primary">Создать проект</a>
+<a asp-action="Create" class="btn btn-primary">Создать проект</a>
