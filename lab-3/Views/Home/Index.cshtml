@@ -1,7 +1,5 @@
 ﻿@model lab_3.Models.HomeViewModel
 
-<h1>Главная страница</h1>
-
 <h2>Проекты</h2>
 <table class="table">
     <thead>
@@ -23,7 +21,7 @@
                 <td>@project.CustomerCompany</td>
                 <td>@project.ContractorCompany</td>
                 <td>@project.StartDate.ToShortDateString()</td>
-                <td>@project.EndDate?.ToShortDateString() ?? "Не завершено"</td>
+                <td>@project.EndDate?.ToShortDateString()</td>
                 <td>@project.Priority</td>
                 <td>
                     <a href="@Url.Action("Edit", "Projects", new { id = project.Id })">Редактировать</a> |
@@ -35,7 +33,7 @@
     </tbody>
 </table>
 <a href="@Url.Action("Create", "Projects")" class="btn btn-primary">Добавить проект</a>
-
+<br><br><br>
 <h2>Сотрудники</h2>
 <table class="table">
     <thead>
@@ -63,7 +61,7 @@
     </tbody>
 </table>
 <a href="@Url.Action("Create", "Employees")" class="btn btn-primary">Добавить сотрудника</a>
-
+<br><br><br>
 <h2>Задачи</h2>
 <table class="table">
     <thead>
@@ -82,7 +80,7 @@
             <tr>
                 <td>@task.Title</td>
                 <td>@task.Author.FirstName @task.Author.LastName</td>
-                <td>@task.Executor?.FirstName @task.Executor?.LastName ?? "Не назначено"</td>
+                <td>@task.Executor?.FirstName @task.Executor?.LastName</td>
                 <td>@task.Status</td>
                 <td>@task.Priority</td>
                 <td>
