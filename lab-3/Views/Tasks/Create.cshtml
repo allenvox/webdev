@@ -1,5 +1,7 @@
 @model lab_3.Models.Task
 
+<h1>Создать задачу</h1>
+
 <form asp-action="Create" method="post">
     <div class="form-group">
         <label asp-for="Title"></label>
@@ -8,25 +10,25 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="AuthorId"></label>
-        <select asp-for="AuthorId" asp-items="ViewBag.Employees" class="form-control"></select>
+        <label asp-for="AuthorId">Автор задачи</label>
+        <select asp-for="AuthorId" asp-items="ViewBag.AuthorId" class="form-control"></select>
         <span asp-validation-for="AuthorId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="ExecutorId"></label>
-        <select asp-for="ExecutorId" asp-items="ViewBag.Employees" class="form-control"></select>
+        <label asp-for="ExecutorId">Исполнитель</label>
+        <select asp-for="ExecutorId" asp-items="ViewBag.ExecutorId" class="form-control"></select>
         <span asp-validation-for="ExecutorId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="ProjectId"></label>
-        <select asp-for="ProjectId" asp-items="ViewBag.Projects" class="form-control"></select>
+        <label asp-for="ProjectId">Проект</label>
+        <select asp-for="ProjectId" asp-items="ViewBag.ProjectId" class="form-control"></select>
         <span asp-validation-for="ProjectId" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Status"></label>
+        <label asp-for="Status">Статус</label>
         <select asp-for="Status" class="form-control">
             <option value="ToDo">To Do</option>
             <option value="InProgress">In Progress</option>
@@ -36,13 +38,13 @@
     </div>
 
     <div class="form-group">
-        <label asp-for="Priority"></label>
-        <input asp-for="Priority" class="form-control" />
+        <label asp-for="Priority">Приоритет</label>
+        <input asp-for="Priority" type="number" class="form-control" />
         <span asp-validation-for="Priority" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Comment"></label>
+        <label asp-for="Comment">Комментарий</label>
         <textarea asp-for="Comment" class="form-control"></textarea>
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
@@ -50,4 +52,4 @@
     <button type="submit" class="btn btn-primary">Создать задачу</button>
 </form>
 
-<a href="@Url.Action("Index", "Tasks")" class="btn btn-secondary">Назад</a>
+<a asp-action="Index" class="btn btn-secondary">Назад к списку задач</a>

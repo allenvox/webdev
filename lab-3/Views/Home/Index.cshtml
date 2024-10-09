@@ -1,6 +1,8 @@
 ﻿@model lab_3.Models.HomeViewModel
 
-<h2>Проекты</h2>
+<h2>
+    <a asp-controller="Projects" asp-action="Index">Проекты</a>
+</h2>
 <table class="table">
     <thead>
         <tr>
@@ -26,7 +28,10 @@
                 <td>
                     <a href="@Url.Action("Edit", "Projects", new { id = project.Id })">Редактировать</a> |
                     <a href="@Url.Action("Details", "Projects", new { id = project.Id })">Просмотр</a> |
-                    <a href="@Url.Action("Delete", "Projects", new { id = project.Id })">Удалить</a>
+                    <form asp-controller="Projects" asp-action="Delete" asp-route-id="@project.Id" method="post"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
                 </td>
             </tr>
         }
@@ -34,7 +39,10 @@
 </table>
 <a href="@Url.Action("Create", "Projects")" class="btn btn-primary">Добавить проект</a>
 <br><br><br>
-<h2>Сотрудники</h2>
+
+<h2>
+    <a asp-controller="Employees" asp-action="Index">Сотрудники</a>
+</h2>
 <table class="table">
     <thead>
         <tr>
@@ -54,7 +62,10 @@
                 <td>
                     <a href="@Url.Action("Edit", "Employees", new { id = employee.Id })">Редактировать</a> |
                     <a href="@Url.Action("Details", "Employees", new { id = employee.Id })">Просмотр</a> |
-                    <a href="@Url.Action("Delete", "Employees", new { id = employee.Id })">Удалить</a>
+                    <form asp-controller="Employees" asp-action="Delete" asp-route-id="@employee.Id" method="post"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
                 </td>
             </tr>
         }
@@ -62,7 +73,10 @@
 </table>
 <a href="@Url.Action("Create", "Employees")" class="btn btn-primary">Добавить сотрудника</a>
 <br><br><br>
-<h2>Задачи</h2>
+
+<h2>
+    <a asp-controller="Tasks" asp-action="Index">Задачи</a>
+</h2>
 <table class="table">
     <thead>
         <tr>
@@ -86,7 +100,10 @@
                 <td>
                     <a href="@Url.Action("Edit", "Tasks", new { id = task.Id })">Редактировать</a> |
                     <a href="@Url.Action("Details", "Tasks", new { id = task.Id })">Просмотр</a> |
-                    <a href="@Url.Action("Delete", "Tasks", new { id = task.Id })">Удалить</a>
+                    <form asp-controller="Tasks" asp-action="Delete" asp-route-id="@task.Id" method="post"
+                        style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </form>
                 </td>
             </tr>
         }
