@@ -11,14 +11,11 @@ namespace lab_3.Models
         public string Email { get; set; }
 
         // Инициализация коллекций в конструкторе
-        public List<Task> Tasks { get; set; }
-        public List<Project> Projects { get; set; }
+        public ICollection<Task> Tasks { get; set; } = new List<Task>();
 
-        public Employee()
-        {
-            // Инициализируем коллекции для предотвращения ошибок валидации
-            Tasks = new List<Task>();
-            Projects = new List<Project>();
-        }
+        // Список сотрудников проекта
+        public ICollection<Project> Projects { get; set; } = new List<Project>(); // Один работник может быть в нескольких проектах
+        public ICollection<Project> ManagedProjects { get; set; } = new List<Project>(); // Если сотрудник может управлять несколькими проектами
+
     }
 }

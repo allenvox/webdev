@@ -12,15 +12,14 @@ namespace lab_3.Models
         public DateTime? EndDate { get; set; }
         public int Priority { get; set; }
 
-        // Инициализация коллекций в конструкторе
-        public List<Task> Tasks { get; set; } = new List<Task>();
-        public List<Employee> Employees { get; set; } = new List<Employee>();
+        // Связь с руководителем проекта
+        public int ManagerId { get; set; }
+        public Employee Manager { get; set; }
 
-        public Project()
-        {
-            // Инициализация коллекций для предотвращения ошибок
-            Tasks = new List<Task>();
-            Employees = new List<Employee>();
-        }
+        // Список задач проекта
+        public ICollection<Task> Tasks { get; set; } = new List<Task>();
+
+        // Список сотрудников проекта
+        public ICollection<Employee> Employees { get; set; } = new List<Employee>();
     }
 }
