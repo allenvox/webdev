@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using lab_3.Data;
 using lab_3.Models;
 using System.Threading.Tasks;
@@ -17,10 +18,47 @@ namespace lab_3.Controllers
         }
 
         // Отображение списка проектов
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate, int? priority, string sortOrder)
         {
-            var projects = await _context.Projects.ToListAsync();
-            return View(projects);
+            // Базовый запрос для выборки проектов
+            var projects = _context.Projects.Include(p => p.Tasks).Include(p => p.Manager).AsQueryable();
+
+            // Фильтрация по диапазону дат начала
+            if (startDate.HasValue && endDate.HasValue)
+            {
+                projects = projects.Where(p => p.StartDate >= startDate && p.StartDate <= endDate);
+            }
+
+            // Фильтрация по приоритету
+            if (priority.HasValue)
+            {
+                projects = projects.Where(p => p.Priority == priority);
+            }
+
+            // Сортировка по различным полям
+            switch (sortOrder)
+            {
+                case "name_desc":
+                    projects = projects.OrderByDescending(p => p.Name);
+                    break;
+                case "date_asc":
+                    projects = projects.OrderBy(p => p.StartDate);
+                    break;
+                case "date_desc":
+                    projects = projects.OrderByDescending(p => p.StartDate);
+                    break;
+                case "priority_asc":
+                    projects = projects.OrderBy(p => p.Priority);
+                    break;
+                case "priority_desc":
+                    projects = projects.OrderByDescending(p => p.Priority);
+                    break;
+                default:
+                    projects = projects.OrderBy(p => p.Name); // Сортировка по имени по умолчанию
+                    break;
+            }
+
+            return View(await projects.ToListAsync());
         }
 
         // Просмотр деталей проекта
@@ -43,38 +81,34 @@ namespace lab_3.Controllers
         }
 
         // Создание проекта (GET)
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            ViewData["ManagerId"] = new SelectList(await _context.Employees.ToListAsync(), "Id", "FirstName"); // Получаем список сотрудников для выбора менеджера
             return View();
         }
 
         // Создание проекта (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,CustomerCompany,ContractorCompany,StartDate,EndDate,Priority")] Project project)
+        public async Task<IActionResult> Create([Bind("Name,CustomerCompany,ContractorCompany,StartDate,EndDate,Priority,ManagerId")] Project project)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(project);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index)); // Перенаправляем на Index
-            }
-
+            project.Manager = await _context.Employees.FindAsync(project.ManagerId);
             // Логирование ошибок валидации
             var errors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (var error in errors)
             {
                 Console.WriteLine(error.ErrorMessage); // Вывод ошибок в консоль
             }
-
-            // Если не прошли валидацию, возвращаем на форму
-            return View(project);
+            _context.Add(project);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index)); // Перенаправляем на Index
         }
 
         // Редактирование проекта (GET)
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
+            ViewData["ManagerId"] = new SelectList(await _context.Employees.ToListAsync(), "Id", "FirstName"); // Получаем список сотрудников для выбора менеджера
             var project = await _context.Projects.FindAsync(id);
             if (project == null) return NotFound();
             return View(project);
@@ -83,24 +117,13 @@ namespace lab_3.Controllers
         // Редактирование проекта (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CustomerCompany,ContractorCompany,StartDate,EndDate,Priority")] Project project)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,CustomerCompany,ContractorCompany,StartDate,EndDate,Priority,ManagerId")] Project project)
         {
             if (id != project.Id) return NotFound();
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(project);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!_context.Projects.Any(p => p.Id == id)) return NotFound();
-                    throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(project);
+            project.Manager = await _context.Employees.FindAsync(project.ManagerId);
+            _context.Update(project);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // Удаление проекта (GET)
@@ -113,14 +136,19 @@ namespace lab_3.Controllers
         }
 
         // Удаление проекта (POST)
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var project = await _context.Projects.FindAsync(id);
-            _context.Projects.Remove(project);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (project != null)
+            {
+                _context.Projects.Remove(project);
+                await _context.SaveChangesAsync(); // Сохраняем изменения
+            }
+
+            return RedirectToAction(nameof(Index)); // Перенаправляем на список проектов
         }
+
     }
 }

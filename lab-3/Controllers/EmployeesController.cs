@@ -107,15 +107,20 @@ namespace lab_3.Controllers
         }
 
         // Удаление сотрудника (POST)
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var employee = await _context.Employees.FindAsync(id);
-            _context.Employees.Remove(employee);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (employee != null)
+            {
+                _context.Employees.Remove(employee);
+                await _context.SaveChangesAsync(); // Сохраняем изменения
+            }
+
+            return RedirectToAction(nameof(Index)); // Перенаправляем на список сотрудников
         }
+
 
         private bool EmployeeExists(int id)
         {

@@ -17,11 +17,61 @@ namespace lab_3.Controllers
         }
 
         // Просмотр списка задач
-        public async System.Threading.Tasks.Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string statusFilter, string sortOrder)
         {
-            var tasks = _context.Tasks.Include(t => t.Author).Include(t => t.Executor).Include(t => t.Project);
+            var tasks = _context.Tasks
+                .Include(t => t.Executor)
+                .Include(t => t.Project)
+                .Include(t => t.Author)
+                .AsQueryable();
+
+            // Фильтрация по статусу
+            if (!string.IsNullOrEmpty(statusFilter))
+            {
+                // Преобразуйте строку в соответствующее значение перечисления
+                if (Enum.TryParse<lab_3.Models.TaskStatus>(statusFilter, out var status))
+                {
+                    tasks = tasks.Where(t => t.Status == status);
+                }
+            }
+
+            // Сортировка
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    tasks = tasks.OrderByDescending(t => t.Title);
+                    break;
+                case "author":
+                    tasks = tasks.OrderBy(t => t.Author.FirstName);
+                    break;
+                case "author_desc":
+                    tasks = tasks.OrderByDescending(t => t.Author.FirstName);
+                    break;
+                case "project":
+                    tasks = tasks.OrderBy(t => t.Project.Name);
+                    break;
+                case "project_desc":
+                    tasks = tasks.OrderByDescending(t => t.Project.Name);
+                    break;
+                case "priority":
+                    tasks = tasks.OrderBy(t => t.Priority);
+                    break;
+                case "priority_desc":
+                    tasks = tasks.OrderByDescending(t => t.Priority);
+                    break;
+                default:
+                    tasks = tasks.OrderBy(t => t.Title); // Сортировка по умолчанию
+                    break;
+            }
+
+            // Подготовка ViewBag для фильтрации
+            ViewBag.CurrentSort = sortOrder;
+            ViewBag.StatusFilter = statusFilter;
+
             return View(await tasks.ToListAsync());
         }
+
+
 
         // Просмотр деталей задачи
         public async System.Threading.Tasks.Task<IActionResult> Details(int? id)
@@ -42,6 +92,10 @@ namespace lab_3.Controllers
         // Отображение формы создания задачи (GET)
         public IActionResult Create()
         {
+            ViewData["AuthorId"] = new SelectList(_context.Employees, "Id", "FirstName"); // Список авторов
+            ViewData["ExecutorId"] = new SelectList(_context.Employees, "Id", "FirstName"); // Список исполнителей
+            ViewData["ProjectId"] = new SelectList(_context.Projects, "Id", "Name"); // Список проектов
+
             // Заполняем ViewBag данными для выпадающих списков
             ViewData["Employees"] = new SelectList(_context.Employees, "Id", "FirstName");
             ViewData["Projects"] = new SelectList(_context.Projects, "Id", "Name");
@@ -56,6 +110,7 @@ namespace lab_3.Controllers
             task.Author = await _context.Employees.FindAsync(task.AuthorId);
             task.Executor = await _context.Employees.FindAsync(task.ExecutorId);
             task.Project = await _context.Projects.FindAsync(task.ProjectId);
+
             _context.Add(task);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index)); // Перенаправляем на список задач
@@ -80,51 +135,49 @@ namespace lab_3.Controllers
         public async System.Threading.Tasks.Task<IActionResult> Edit(int id, [Bind("Id,Title,AuthorId,ExecutorId,ProjectId,Status,Comment,Priority")] lab_3.Models.Task task)
         {
             if (id != task.Id) return NotFound();
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(task);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TaskExists(task.Id)) return NotFound();
-                    throw;
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["Employees"] = new SelectList(_context.Employees, "Id", "FirstName", task.ExecutorId);
-            ViewData["Projects"] = new SelectList(_context.Projects, "Id", "Name", task.ProjectId);
-            return View(task);
+            task.Author = await _context.Employees.FindAsync(task.AuthorId);
+            task.Executor = await _context.Employees.FindAsync(task.ExecutorId);
+            task.Project = await _context.Projects.FindAsync(task.ProjectId);
+            _context.Update(task);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
         }
 
         // Удаление задачи (GET)
-        public async System.Threading.Tasks.Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null) return NotFound();
+            if (id == null)
+            {
+                return NotFound();
+            }
 
             var task = await _context.Tasks
-                .Include(t => t.Author)
                 .Include(t => t.Executor)
                 .Include(t => t.Project)
+                .Include(t => t.Author)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (task == null) return NotFound();
+            if (task == null)
+            {
+                return NotFound();
+            }
 
-            return View(task);
+            return View(task); // Отправляем задачу в представление для подтверждения удаления
         }
 
         // Удаление задачи (POST)
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async System.Threading.Tasks.Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var task = await _context.Tasks.FindAsync(id);
-            _context.Tasks.Remove(task);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (task != null)
+            {
+                _context.Tasks.Remove(task);
+                await _context.SaveChangesAsync(); // Сохраняем изменения
+            }
+
+            return RedirectToAction(nameof(Index)); // Перенаправляем на список задач
         }
 
         private bool TaskExists(int id)
