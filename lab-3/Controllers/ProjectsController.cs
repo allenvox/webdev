@@ -64,13 +64,19 @@ namespace lab_3.Controllers
             {
                 return NotFound();
             }
-            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
+            // Обязательно включите сотрудников при извлечении проекта
+            var project = await _context.Projects
+                .Include(p => p.Employees) // Включаем сотрудников проекта
+                .Include(p => p.Tasks) // Если хотите также видеть задачи
+                .Include(p => p.Manager) // Если нужно также отображать менеджера
+                .FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
             {
                 return NotFound();
             }
             return View(project);
         }
+
 
         // Создание проекта (GET)
         public async Task<IActionResult> Create()
@@ -141,5 +147,44 @@ namespace lab_3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> AddEmployee(int? id)
+        {
+            if (id == null) return NotFound();
+
+            var project = await _context.Projects
+                .Include(p => p.Employees) // Включаем сотрудников проекта
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null) return NotFound();
+
+            // Получаем список сотрудников, которых можно добавить к проекту
+            var availableEmployees = await _context.Employees.ToListAsync();
+
+            ViewBag.Employees = new SelectList(availableEmployees, "Id", "FirstName");
+            return View(project);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddEmployee(int id, int employeeId)
+        {
+            var project = await _context.Projects
+                .Include(p => p.Employees)
+                .FirstOrDefaultAsync(p => p.Id == id);
+
+            if (project == null) return NotFound();
+
+            var employee = await _context.Employees.FindAsync(employeeId);
+            if (employee == null) return NotFound();
+
+            // Добавляем сотрудника к проекту
+            if (!project.Employees.Contains(employee))
+            {
+                project.Employees.Add(employee);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = project.Id });
+        }
     }
 }

@@ -16,20 +16,14 @@ namespace lab_3.Controllers
             _context = context;
         }
 
-        // Просмотр списка сотрудников
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.Employees.ToListAsync());
-        }
-
         // Просмотр деталей сотрудника
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
-
-            var employee = await _context.Employees.FirstOrDefaultAsync(m => m.Id == id);
+            var employee = await _context.Employees
+                .Include(e => e.Projects) // Включаем проекты сотрудника
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null) return NotFound();
-
             return View(employee);
         }
 
