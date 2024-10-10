@@ -50,14 +50,12 @@ namespace lab_3.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index)); // Перенаправляем на Index
             }
-
             // Логирование ошибок валидации
             var errors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (var error in errors)
             {
                 Console.WriteLine(error.ErrorMessage); // Вывод ошибок в консоль
             }
-
             return View(employee); // Если не прошли валидацию, возвращаем на форму
         }
 
@@ -77,7 +75,6 @@ namespace lab_3.Controllers
         public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,MiddleName,Email")] Employee employee)
         {
             if (id != employee.Id) return NotFound();
-
             if (ModelState.IsValid)
             {
                 try
@@ -99,10 +96,8 @@ namespace lab_3.Controllers
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null) return NotFound();
-
             var employee = await _context.Employees.FirstOrDefaultAsync(m => m.Id == id);
             if (employee == null) return NotFound();
-
             return View(employee);
         }
 
@@ -117,10 +112,8 @@ namespace lab_3.Controllers
                 _context.Employees.Remove(employee);
                 await _context.SaveChangesAsync(); // Сохраняем изменения
             }
-
             return RedirectToAction(nameof(Index)); // Перенаправляем на список сотрудников
         }
-
 
         private bool EmployeeExists(int id)
         {

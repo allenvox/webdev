@@ -25,7 +25,6 @@ namespace lab_3.Controllers
                 .Include(t => t.Executor)
                 .Include(t => t.Project)
                 .ToListAsync();
-
             // Создаем объект для передачи в представление
             var viewModel = new HomeViewModel
             {
@@ -33,7 +32,6 @@ namespace lab_3.Controllers
                 Employees = employees,
                 Tasks = tasks
             };
-
             return View(viewModel);
         }
     }

@@ -22,19 +22,16 @@ namespace lab_3.Controllers
         {
             // Базовый запрос для выборки проектов
             var projects = _context.Projects.Include(p => p.Tasks).Include(p => p.Manager).AsQueryable();
-
             // Фильтрация по диапазону дат начала
             if (startDate.HasValue && endDate.HasValue)
             {
                 projects = projects.Where(p => p.StartDate >= startDate && p.StartDate <= endDate);
             }
-
             // Фильтрация по приоритету
             if (priority.HasValue)
             {
                 projects = projects.Where(p => p.Priority == priority);
             }
-
             // Сортировка по различным полям
             switch (sortOrder)
             {
@@ -57,7 +54,6 @@ namespace lab_3.Controllers
                     projects = projects.OrderBy(p => p.Name); // Сортировка по имени по умолчанию
                     break;
             }
-
             return View(await projects.ToListAsync());
         }
 
@@ -68,15 +64,11 @@ namespace lab_3.Controllers
             {
                 return NotFound();
             }
-
-            var project = await _context.Projects
-                .FirstOrDefaultAsync(p => p.Id == id);
-
+            var project = await _context.Projects.FirstOrDefaultAsync(p => p.Id == id);
             if (project == null)
             {
                 return NotFound();
             }
-
             return View(project);
         }
 
@@ -97,18 +89,18 @@ namespace lab_3.Controllers
             var errors = ModelState.Values.SelectMany(v => v.Errors);
             foreach (var error in errors)
             {
-                Console.WriteLine(error.ErrorMessage); // Вывод ошибок в консоль
+                Console.WriteLine(error.ErrorMessage);
             }
             _context.Add(project);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index)); // Перенаправляем на Index
+            return RedirectToAction(nameof(Index));
         }
 
         // Редактирование проекта (GET)
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null) return NotFound();
-            ViewData["ManagerId"] = new SelectList(await _context.Employees.ToListAsync(), "Id", "FirstName"); // Получаем список сотрудников для выбора менеджера
+            ViewData["ManagerId"] = new SelectList(await _context.Employees.ToListAsync(), "Id", "FirstName");
             var project = await _context.Projects.FindAsync(id);
             if (project == null) return NotFound();
             return View(project);
@@ -144,10 +136,9 @@ namespace lab_3.Controllers
             if (project != null)
             {
                 _context.Projects.Remove(project);
-                await _context.SaveChangesAsync(); // Сохраняем изменения
+                await _context.SaveChangesAsync();
             }
-
-            return RedirectToAction(nameof(Index)); // Перенаправляем на список проектов
+            return RedirectToAction(nameof(Index));
         }
 
     }
