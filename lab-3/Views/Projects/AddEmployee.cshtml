@@ -1,0 +1,16 @@
+@model lab_3.Models.Project
+
+<h2>Добавить сотрудника на проект: @Model.Name</h2>
+
+<form asp-action="AddEmployee" method="post">
+    <input type="hidden" asp-for="Id" />
+
+    <div class="form-group">
+        <label for="employeeId">Сотрудник</label>
+        <select name="employeeId" class="form-control" asp-items="ViewBag.Employees"></select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Добавить сотрудника</button>
+</form>
+
+<a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-secondary">Назад к проекту</a>

@@ -1,33 +1,27 @@
 @model lab_3.Models.Project
 
-<h1>Детали проекта</h1>
+<h2>Проект: @Model.Name</h2>
 
-<table class="table">
-    <tr>
-        <th>Название проекта</th>
-        <td>@Model.Name</td>
-    </tr>
-    <tr>
-        <th>Компания-заказчик</th>
-        <td>@Model.CustomerCompany</td>
-    </tr>
-    <tr>
-        <th>Компания-исполнитель</th>
-        <td>@Model.ContractorCompany</td>
-    </tr>
-    <tr>
-        <th>Дата начала</th>
-        <td>@Model.StartDate.ToShortDateString()</td>
-    </tr>
-    <tr>
-        <th>Дата окончания</th>
-        <td>@Model.EndDate?.ToShortDateString()</td>
-    </tr>
-    <tr>
-        <th>Приоритет</th>
-        <td>@Model.Priority</td>
-    </tr>
-</table>
+<p>Компания-заказчик: @Model.CustomerCompany</p>
+<p>Компания-исполнитель: @Model.ContractorCompany</p>
+<p>Дата начала: @Model.StartDate.ToShortDateString()</p>
+<p>Дата окончания: @Model.EndDate?.ToShortDateString()</p>
 
-<a href="@Url.Action("Edit", "Projects", new { id = Model.Id })" class="btn btn-primary">Редактировать</a>
-<a href="@Url.Action("Index", "Projects")" class="btn btn-secondary">Назад</a>
+<h3>Сотрудники</h3>
+<ul>
+    @if (Model.Employees != null && Model.Employees.Any())
+    {
+        foreach (var employee in Model.Employees)
+        {
+            <li>@employee.FirstName @employee.LastName</li>
+        }
+    }
+    else
+    {
+        <li>Сотрудников нет.</li>
+    }
+</ul>
+
+<a asp-action="AddEmployee" asp-route-id="@Model.Id" class="btn btn-primary">Добавить сотрудника</a>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-secondary">Редактировать проект</a>
+<a asp-action="Index" class="btn btn-secondary">Назад к списку проектов</a>
