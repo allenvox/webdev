@@ -16,6 +16,5 @@ namespace lab_3.Models
         // Список сотрудников проекта
         public ICollection<Project> Projects { get; set; } = new List<Project>(); // Один работник может быть в нескольких проектах
         public ICollection<Project> ManagedProjects { get; set; } = new List<Project>(); // Если сотрудник может управлять несколькими проектами
-
     }
 }
