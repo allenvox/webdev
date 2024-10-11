@@ -1,0 +1,61 @@
+{
+    "InitialParameters": {
+        "Health": 100,
+        "Alcohol": 0,
+        "Joy": 0,
+        "Fatigue": 0,
+        "Money": 100
+    },
+    "Actions": {
+        "GoToWork": {
+            "RequiredAlcohol": 50,
+            "RequiredFatigue": 10,
+            "JoyChange": -5,
+            "AlcoholChange": -30,
+            "MoneyChange": 100,
+            "FatigueChange": 70
+        },
+        "ContemplateNature": {
+            "JoyChange": 1,
+            "AlcoholChange": -10,
+            "fatigueChange": 10
+        },
+        "DrinkWineAndWatch": {
+            "JoyChange": -1,
+            "AlcoholChange": 30,
+            "FatigueChange": 10,
+            "HealthChange": -5,
+            "MoneyChange": -20
+        },
+        "GoToBar": {
+            "JoyChange": 1,
+            "AlcoholChange": 60,
+            "fatigueChange": 40,
+            "healthChange": -10,
+            "moneyChange": -100
+        },
+        "DrinkWithMarginals": {
+            "JoyChange": 5,
+            "HealthChange": -80,
+            "AlcoholChange": 90,
+            "FatigueChange": 80,
+            "MoneyChange": -150
+        },
+        "SingInSubway": {
+            "JoyChange": 1,
+            "AlcoholChange": 10,
+            "FatigueChange": 20,
+            "MoneyChange": 10,
+            "BonusAlcoholMin": 40,
+            "BonusAlcoholMax": 70,
+            "BonusMoney": 50
+        },
+        "Sleep": {
+            "HealthGain": 90,
+            "BadDreamsAlcoholLimit": 70,
+            "BadDreamsJoyPenalty": 3,
+            "AlcoholReduction": -50,
+            "FatigueReduction": -70
+        }
+    }
+}
