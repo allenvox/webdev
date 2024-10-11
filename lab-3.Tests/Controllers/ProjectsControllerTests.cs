@@ -226,5 +226,60 @@ namespace lab_3.Controllers
             Assert.Equal("Index", redirectToActionResult.ActionName);
             Assert.Equal(2, await context.Projects.CountAsync()); // Проверяем, что проект был удален
         }
+
+        [Fact]
+        public async System.Threading.Tasks.Task AddEmployee_AddsEmployeeToProject()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+            using var context = new ApplicationDbContext(options);
+            var employee = new Employee { Id = 9, FirstName = "John", LastName = "Doe", MiddleName = "Jr.", Email = "john@gmail.com" };
+            var project = new Project { Id = 9, Name = "Project 9", ContractorCompany = "Company 1", CustomerCompany = "Company 2" };
+            context.Employees.Add(employee);
+            context.Projects.Add(project);
+            await context.SaveChangesAsync();
+            var controller = new ProjectsController(context);
+
+            // Act
+            var result = await controller.AddEmployee(9, 9);
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Details", redirectToActionResult.ActionName);
+
+            // Проверяем, что сотрудник был добавлен к проекту
+            var updatedProject = await context.Projects.Include(p => p.Employees).FirstOrDefaultAsync(p => p.Id == 9);
+            Assert.NotNull(updatedProject);
+            Assert.Single(updatedProject.Employees); // Проверяем, что к проекту добавлен только 1 сотрудник
+            Assert.Equal("John", updatedProject.Employees.First().FirstName);
+        }
+
+        [Fact]
+        public async System.Threading.Tasks.Task AddEmployee_DoesNotAddDuplicateEmployeeToProject()
+        {
+            // Arrange
+            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDatabase")
+                .Options;
+
+            using var context = new ApplicationDbContext(options);
+            await context.SaveChangesAsync();
+
+            var controller = new ProjectsController(context);
+
+            // Act
+            var result = await controller.AddEmployee(1, 1); // Пытаемся добавить того же сотрудника снова
+
+            // Assert
+            var redirectToActionResult = Assert.IsType<RedirectToActionResult>(result);
+            Assert.Equal("Details", redirectToActionResult.ActionName);
+
+            // Проверяем, что количество сотрудников не изменилось
+            var updatedProject = await context.Projects.Include(p => p.Employees).FirstOrDefaultAsync(p => p.Id == 1);
+            Assert.NotNull(updatedProject);
+            Assert.Single(updatedProject.Employees); // Проверяем, что сотрудник не добавлен дважды
+        }
     }
 }
