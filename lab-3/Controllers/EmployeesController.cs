@@ -16,6 +16,12 @@ namespace lab_3.Controllers
             _context = context;
         }
 
+        public async Task<IActionResult> Index()
+        {
+            var employees = await _context.Employees.ToListAsync();
+            return View(employees);
+        }
+
         // Просмотр деталей сотрудника
         public async Task<IActionResult> Details(int? id)
         {
