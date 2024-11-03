@@ -63,7 +63,9 @@ namespace lab_4.Controllers
         [HttpGet("available")]
         public async Task<IActionResult> GetAvailableBooks()
         {
-            var availableBooks = await _context.Books.Where(b => b.IsAvailable).ToListAsync();
+            var availableBooks = await _context.Books
+                .Where(b => b.Copies > 0)
+                .ToListAsync();
             return Ok(availableBooks);
         }
 
