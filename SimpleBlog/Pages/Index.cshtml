@@ -1,0 +1,19 @@
+﻿@page
+@model SimpleBlog.Pages.IndexModel
+@using SimpleBlog.Models
+
+<h1>Блог</h1>
+
+<a asp-page="/Posts/Create" class="btn btn-primary">Создать пост</a>
+
+@foreach (var post in Model.Posts)
+{
+    <div>
+        <h2>@post.Title</h2>
+        <p>@post.Content</p>
+        <p><small>@post.CreatedAt.ToString("dd.MM.yyyy HH:mm")</small></p>
+        <a asp-page="/Posts/Edit" asp-route-id="@post.Id" class="btn btn-warning">Редактировать</a>
+        <a asp-page="/Posts/Delete" asp-route-id="@post.Id" class="btn btn-danger">Удалить</a>
+    </div>
+    <hr />
+}
