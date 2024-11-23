@@ -1,0 +1,23 @@
+@page
+@model SimpleBlog.Pages.Identity.RegisterModel
+
+<h2>Register</h2>
+
+<form method="post">
+    <div>
+        <label>Email</label>
+        <input asp-for="Input.Email" />
+        <span asp-validation-for="Input.Email"></span>
+    </div>
+    <div>
+        <label>Password</label>
+        <input asp-for="Input.Password" type="password" />
+        <span asp-validation-for="Input.Password"></span>
+    </div>
+    <div>
+        <label>Confirm Password</label>
+        <input asp-for="Input.ConfirmPassword" type="password" />
+        <span asp-validation-for="Input.ConfirmPassword"></span>
+    </div>
+    <button type="submit">Register</button>
+</form>
